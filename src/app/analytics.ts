@@ -1,3 +1,5 @@
+"use client"
+
 import { registerAnalyticsHandler } from "@/newt-pkg/";
 
 

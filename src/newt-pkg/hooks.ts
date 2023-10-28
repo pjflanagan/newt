@@ -8,26 +8,24 @@ import {
 import { registerEvent } from "./setup";
 import { recordEvent } from "./logging";
 
-export const TEST = 'TEST';
-
 // Turns events into tracked events
-export function useRecordedEvent<T>(callback: Function, name?: string): [(data: T) => void, string] {
-  const parentName = arguments.callee.caller.name;
-  const callbackName = callback.name;
-  const eventName = !!name ? name : `${parentName}-${callbackName}`;
+export function useRecordedEvent<T>(eventHandler: () => void, name: string): [(data: T) => void, string] {
+  // const parentName = arguments.callee.caller.name;
+  // const eventHandlerName = eventHandler.name;
+  // const eventName = !!name ? name : `${parentName}-${eventHandlerName}`;
 
   useMemo(() => {
-    registerEvent(eventName, callback);
-  }, [eventName, callback]);
+    registerEvent(name, eventHandler);
+  }, [name, eventHandler]);
 
-  const recordedEventCallback = useMemo(() => {
+  const recordedEventHandler = useMemo(() => {
     return async (data: T) => {
-      await callback();
-      recordEvent(eventName, data);
+      await eventHandler();
+      recordEvent(name, data);
     };
-  }, [eventName, callback]);
+  }, [name, eventHandler]);
 
-  return [recordedEventCallback, eventName];
+  return [recordedEventHandler, name];
 }
 
 // Tracks every time state changes
@@ -47,7 +45,7 @@ export function useRecordedState<T>(name: string, defaultValue: T): UseRecordedS
 
 // Tracks every time an effect happens
 // This would probably be bad because useEffect get called often
-export function useRecordedEffect(name: string, callback: Function, triggers: any[]) {
+export function useRecordedEffect(name: string, callback: () => void, triggers: any[]) {
   useEffect(() => {
     recordEvent(name, {});
     callback();
@@ -57,7 +55,7 @@ export function useRecordedEffect(name: string, callback: Function, triggers: an
 // Runs and records when every condition is true
 export function useConditionalEffect(
   name: string,
-  callback: Function,
+  callback: () => void,
   conditions: boolean[],
   triggers: any[]
 ) {
