@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import './analytics';
+import { NewtTestRunner } from '@/newt-pkg';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,6 +18,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      {/* This only needs to exist once on the top level component */}
+      <NewtTestRunner allowedEnvironments={['dev', 'stg']} />
       <body className={inter.className}>{children}</body>
     </html>
   )
