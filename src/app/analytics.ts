@@ -1,6 +1,6 @@
 "use client"
 
-import { registerAnalyticsHandler, AnalyticsHandlerFunction } from "@/newt-pkg/";
+import { AnalyticsHandlerFunction } from "@/newt-pkg/";
 
 
 // write your own analytics function (ex: call Google Analytics)

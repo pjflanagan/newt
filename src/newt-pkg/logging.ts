@@ -7,7 +7,12 @@ let eventLog: [string, any][] = []
 
 // Also sends it to any linked analytics
 export function recordEvent(name: string, data: any) {
+  // push the event to the log
   eventLog.push([name, data]);
-  analyticsHandler(name, data);
+  // handle the event
+  if (analyticsHandler) {
+    analyticsHandler(name, data);
+  }
+  // TEST:
   console.log(eventLog);
 }

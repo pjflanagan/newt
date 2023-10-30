@@ -3,26 +3,28 @@
 import {
   useMemo,
   useState,
-  useEffect
+  useEffect,
+  useCallback
 } from "react";
 import { registerEvent } from "./setup";
 import { recordEvent } from "./logging";
 
 // Turns events into tracked events
 // Name comes first to encourage its usage
-export function useRecordedEvent<T>(name: string, eventHandler: () => void): [string, (data: T) => void] {
-  // const parentName = arguments.callee.caller.name;
-  // const eventHandlerName = eventHandler.name;
-  // const eventName = !!name ? name : `${parentName}-${eventHandlerName}`;
+export function useRecordedEvent<T>(name: string, eventHandler: () => void): [string, (data?: T) => void] {
+  const [isRegistered, setIsRegistered] = useState(false);
 
-  useMemo(() => {
-    registerEvent(name, eventHandler);
-  }, [name, eventHandler]);
+  useEffect(() => {
+    if (!isRegistered) {
+      setIsRegistered(true);
+      registerEvent(name, eventHandler);
+    }
+  }, [isRegistered, name, eventHandler]);
 
   const recordedEventHandler = useMemo(() => {
-    return async (data: T) => {
-      await eventHandler();
+    return async (data?: T) => {
       recordEvent(name, data);
+      await eventHandler();
     };
   }, [name, eventHandler]);
 
@@ -46,11 +48,11 @@ export function useRecordedState<T>(name: string, defaultValue: T): UseRecordedS
 
 // Tracks every time an effect happens
 // This would probably be bad because useEffect get called often
-export function useRecordedEffect(name: string, callback: () => void, triggers: any[]) {
+export function useRecordedEffectOnce(name: string, callback: () => void) {
   useEffect(() => {
     recordEvent(name, {});
     callback();
-  }, triggers);
+  }, []);
 }
 
 // Runs and records when every condition is true
