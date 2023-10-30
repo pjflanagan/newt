@@ -1,32 +1,20 @@
-"use client" // TODO: homepage cannot be use client
+"use client";
 
 import { useRecordedState, useRecordedEvent } from "../newt-pkg";
 import styles from "./page.module.css";
 
-
 export default function Home() {
-
-  console.log('useRecordedEvent', useRecordedEvent);
-
   // Write state handlers like normal
-  const [selection, setSelection, selectionTrackingName] = useRecordedState<null | string>(
-    "CheckoutPage-selection",
-    null
-  );
-
-  function changeSelection(newSelection: string) {
-    setSelection(newSelection);
-  }
-
-  async function onSubmit() {
-    // backend call
-    console.log(selection);
-  }
+  const [selectionTrackingName, selection, setSelection] = useRecordedState<
+    null | string
+  >("CheckoutPage-selection", null);
 
   // Wrap each function in useNewt to link analytics and testing
-  const [handleClick, handleClickName] = useRecordedEvent(
-    onSubmit,
-    "CheckoutPage-submit"
+  const [handleClickName, handleClick] = useRecordedEvent(
+    "CheckoutPage-submit",
+    async () => {
+      console.log('FETCH', selection);
+    }
   );
 
   return (
@@ -34,13 +22,19 @@ export default function Home() {
       {/* Use the returned handlers and names */}
       <button
         data-testid={selectionTrackingName}
-        onClick={() => changeSelection('option1')}
-      />
+        onClick={() => setSelection("option1")}
+      >
+        Option 1
+      </button>
       <button
         data-testid={selectionTrackingName}
-        onClick={() => changeSelection('option2')}
-      />
-      <button data-testid={handleClickName} onClick={handleClick} />
+        onClick={() => setSelection("option2")}
+      >
+        Option 2
+      </button>
+      <button data-testid={handleClickName} onClick={handleClick}>
+        Submit
+      </button>
     </main>
   );
 }

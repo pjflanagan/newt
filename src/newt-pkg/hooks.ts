@@ -9,7 +9,8 @@ import { registerEvent } from "./setup";
 import { recordEvent } from "./logging";
 
 // Turns events into tracked events
-export function useRecordedEvent<T>(eventHandler: () => void, name: string): [(data: T) => void, string] {
+// Name comes first to encourage its usage
+export function useRecordedEvent<T>(name: string, eventHandler: () => void): [string, (data: T) => void] {
   // const parentName = arguments.callee.caller.name;
   // const eventHandlerName = eventHandler.name;
   // const eventName = !!name ? name : `${parentName}-${eventHandlerName}`;
@@ -25,12 +26,12 @@ export function useRecordedEvent<T>(eventHandler: () => void, name: string): [(d
     };
   }, [name, eventHandler]);
 
-  return [recordedEventHandler, name];
+  return [name, recordedEventHandler];
 }
 
 // Tracks every time state changes
 
-type UseRecordedState<T> = [T, (newValue: T) => void, string];
+type UseRecordedState<T> = [string, T, (newValue: T) => void];
 
 export function useRecordedState<T>(name: string, defaultValue: T): UseRecordedState<T> {
   const [value, setValue] = useState(defaultValue);
@@ -40,7 +41,7 @@ export function useRecordedState<T>(name: string, defaultValue: T): UseRecordedS
     setValue(newValue);
   }
 
-  return [value, setValueAndTrack, name];
+  return [name, value, setValueAndTrack];
 }
 
 // Tracks every time an effect happens
