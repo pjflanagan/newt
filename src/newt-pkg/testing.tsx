@@ -1,10 +1,10 @@
 import { processEnv } from "@next/env";
 import { eventRegistry } from "./setup";
 
-type PlayableAction = [string, any];
+type PlayableAction = [string] | [string, any];
 
 // Calls each action in order for e2e tests
-function playActionSequence(sequence: PlayableAction[]) {
+export function playRecordedActions(sequence: PlayableAction[]) {
   // use the registry of actions to play each event
   sequence.forEach(playAction);
 }

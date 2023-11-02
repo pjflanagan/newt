@@ -5,7 +5,7 @@ export let eventRegistry: [string, Function][] = [];
 
 // Registers each event with a unique name
 // Throws an error if there is a duplicate name
-// Once in the registry, test_playActionSequence can call them
+// Once in the registry, playRecordedActions can call them
 export function registerEvent(name: string, callback: () => void) {
   if (eventNameRegistry.has(name)) {
     console.warn(`Duplicate name ${name}`);
